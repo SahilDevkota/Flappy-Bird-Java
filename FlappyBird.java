@@ -80,7 +80,7 @@ public class FlappyBird extends  JPanel implements ActionListener, KeyListener{
     boolean gameOver = false;
     double score = 0;
     boolean startTheGame = false;
-
+    boolean gamePaused = false;
 
     //FlappyBird Constructor
     FlappyBird(){
@@ -173,6 +173,12 @@ public class FlappyBird extends  JPanel implements ActionListener, KeyListener{
             g.drawString(String.valueOf((int)score),10,35);
         }
 
+        g.setColor(Color.YELLOW);
+        g.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        //Show pause messages
+        if(gamePaused){
+            g.drawString("GAME PAUSED! Press S to start.",boardWidth/8,boardHeight/4);
+        }
         if(!startTheGame){
             //Start of the screen
             g.setColor(Color.white);
@@ -272,6 +278,17 @@ public class FlappyBird extends  JPanel implements ActionListener, KeyListener{
 
     @Override
     public void keyReleased(KeyEvent e) {
+        if(e.getKeyChar() == 'P' || e.getKeyChar() == 'p'){
+            gameLoop.stop();
+            placePipesLoop.stop();
+            gamePaused = true;
+            repaint();
+        }else if(e.getKeyChar() == 'S' || e.getKeyChar() == 's'){
+            gamePaused = false;
+            gameLoop.start();
+            placePipesLoop.start();
+        }
+
 
 
     }
