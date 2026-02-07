@@ -75,12 +75,16 @@ public class FlappyBird extends  JPanel implements ActionListener, KeyListener{
     //Timer
     Timer gameLoop;
     Timer placePipesLoop;
+    Timer countDownTimer;
 
     //Game state and Score
     boolean gameOver = false;
     double score = 0;
+    int countDown = 0;
     boolean startTheGame = false;
     boolean gamePaused = false;
+    boolean isCountingDown = false;
+
 
     //FlappyBird Constructor
     FlappyBird(){
@@ -185,6 +189,13 @@ public class FlappyBird extends  JPanel implements ActionListener, KeyListener{
             g.setFont(new Font("Times new Roman",Font.BOLD,24));
             g.drawString("Press SPACE to start", boardWidth/4,boardHeight/2);
         }
+
+        //Shows countdown after pressing start
+        if(isCountingDown){
+            g.setColor(Color.RED);
+            g.setFont(new Font("Times New Roman",Font.BOLD,72));
+            g.drawString(String.valueOf(countDown),boardWidth/ 2-20,boardHeight/2);
+        }
     }
 
     public void move(){
@@ -231,6 +242,36 @@ public class FlappyBird extends  JPanel implements ActionListener, KeyListener{
                 a.x + a.width > b.x &&
                 a.y < b.y +  b.height &&
                 a.y + a.height > b.y;
+    }
+
+    //It gives 3 seconds to player when they pause and press start to play
+    public void resumeWithCountDown(){
+
+        if(isCountingDown) return;
+
+        countDown = 3;
+        isCountingDown = true;
+
+        repaint();
+
+        countDownTimer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                repaint();
+                countDown --;
+                if(countDown == 0){
+                    countDownTimer.stop();
+                    isCountingDown = false;
+                    gamePaused = false;
+                    gameLoop.start();
+                    placePipesLoop.start();
+                }
+
+            }
+        });
+        countDownTimer.start();
+
     }
 
     @Override
@@ -284,9 +325,9 @@ public class FlappyBird extends  JPanel implements ActionListener, KeyListener{
             gamePaused = true;
             repaint();
         }else if(e.getKeyChar() == 'S' || e.getKeyChar() == 's'){
-            gamePaused = false;
-            gameLoop.start();
-            placePipesLoop.start();
+            if(gamePaused){
+                resumeWithCountDown();
+            }
         }
 
 
